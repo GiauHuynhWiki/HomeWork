@@ -22,6 +22,40 @@ final class HTTPService: HTTPServiceProtocol {
         self.session = session
     }
 
+    func getRequest2<Response: Decodable>(
+        urlString: String,
+        responseType: Response.Type
+    ) async throws -> Response {
+        guard let url = URL(string: urlString) else {
+            throw APIError.invalidURL(url: urlString)
+        }
+        
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "GET"
+        // set accessToken && appVersion
+//        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+//        request.setValue(appVersion, forHTTPHeaderField: "App-Version")
+        
+        // for POST
+//        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+//        request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
+        
+        let (data, response) = try await session.data(for: urlRequest)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              (200...299).contains(httpResponse.statusCode) else {
+                  throw APIError.requestFailed(
+                    url: urlString,
+                    code: (response as? HTTPURLResponse)?.statusCode ?? -1,
+                    message: "errroe ne"
+                  )
+              }
+        
+        let decodedData = try JSONDecoder().decode(Response.self, from: data)
+        
+        return decodedData
+    }
+    
     func getRequest<Response: Decodable>(
         urlString: String,
         responseType: Response.Type,
