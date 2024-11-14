@@ -15,7 +15,7 @@ extension View {
     ) -> some View {
         if condition { transform(self) } else { self }
     }
-    
+
     @ViewBuilder
     func `if`<IfTransform: View, ElseTransform: View>(
         _ condition: Bool,
@@ -24,9 +24,12 @@ extension View {
     ) -> some View {
         if condition { ifTransform(self) } else { elseTransform(self) }
     }
-    
+
     func asButton(action: @escaping () -> Void) -> some View {
         Button(action: action, label: { self })
             .buttonStyle(.plain)
     }
+    // 1
+    // 2
+    // 3
 }
